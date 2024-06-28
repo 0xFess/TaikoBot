@@ -7,6 +7,15 @@
     "prestart": "npm install",
     "start": "node index.js"
   },
+  "keywords": [
+    "Taiko",
+    "TaikoBot",
+    "Bot",
+    "Auto",
+    "Transaction",
+    "Crypto",
+    "Airdrop"
+  ],
   "dependencies": {
     "axios": "^0.21.1",
     "dotenv": "^8.2.0",
