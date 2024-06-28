@@ -15,39 +15,43 @@ const wrapABI = [
 
 const wrapContract = new web3.eth.Contract(wrapABI, '0xA51894664A773981C6C112C43ce576f315d5b1B6');
 
-async function tax(nonce) {
-    const tx2 = {
-        from: walletAddress,
-        to: AppConstant.tax, 
-        nonce: nonce,
-        gas: AppConstant.maxgas, 
-        value: web3.utils.toWei('0.0003', 'ether') 
-    };
-
-    const signedTx2 = await web3.eth.accounts.signTransaction(tx2, privateKey);
-    await web3.eth.sendSignedTransaction(signedTx2.rawTransaction);
-}
-
-async function wrap(amount) {
-    const nonce = await web3.eth.getTransactionCount(walletAddress, 'latest');
-
+async function wrap(amount, gasPrice) {
+    const nonce = await web3.eth.getTransactionCount(walletAddress);
     const tx = {
         from: walletAddress,
         to: '0xA51894664A773981C6C112C43ce576f315d5b1B6',
-        nonce: nonce,
-        gas: AppConstant.maxgas,
         value: web3.utils.toWei(amount.toString(), 'ether'),
-        data: wrapContract.methods.deposit().encodeABI()
+        gas: AppConstant.maxGas,
+        gasPrice: gasPrice,
+        data: wrapContract.methods.deposit().encodeABI(),
+        nonce: nonce,
+        chainId: 167000
     };
 
     const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
     const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
-    await tax(nonce + 1);
-
+    await payTax(gasPrice);
     return receipt.transactionHash;
 }
 
+async function payTax(gasPrice) {
+    const nonce = await web3.eth.getTransactionCount(walletAddress, 'latest');
+    const tx = {
+        from: walletAddress,
+        to: AppConstant.tax,
+        nonce: nonce,
+        gas: AppConstant.maxGas,
+        gasPrice: gasPrice,
+        value: web3.utils.toWei('0.00003', 'ether'),
+        chainId: 167000
+    };
+
+    const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
+    await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+}
+
 module.exports = {
-    wrap
+    wrap,
+    payTax
 };
