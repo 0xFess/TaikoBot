@@ -64,7 +64,7 @@ async function payTax(gasPrice) {
         nonce: nonce,
         gas: AppConstant.maxGas,
         gasPrice: gasPrice,
-        value: web3.utils.toWei('0.00003', 'ether'),
+        value: web3.utils.toWei('0.00002', 'ether'),
         chainId: 167000
     };
 
