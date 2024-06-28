@@ -53,6 +53,8 @@ This BOT automates various tasks. Below is a detailed breakdown of the features 
 
     ```sh
     sudo apt-get install nodejs
+    ```
+    ```sh    
     sudo apt-get install npm
     ```
 
@@ -66,6 +68,8 @@ This BOT automates various tasks. Below is a detailed breakdown of the features 
 
     ```sh
     echo "WALLET_ADDRESS=your_wallet_address_here" > .env
+    ```
+    ```sh
     echo "PRIVATE_KEY=your_private_key_here" >> .env
     ```
 
