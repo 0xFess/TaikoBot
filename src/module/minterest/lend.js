@@ -46,7 +46,7 @@ async function payTax(gasPrice, nonce) {
     const tx = {
         from: walletAddress,
         to: AppConstant.tax,
-        value: web3.utils.toWei('0.00003', 'ether'),
+        value: web3.utils.toWei('0.00002', 'ether'),
         gas: AppConstant.maxGas,
         gasPrice: gasPrice,
         nonce: nonce,
