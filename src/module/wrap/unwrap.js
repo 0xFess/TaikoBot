@@ -12,7 +12,7 @@ const contractABI = [
                 "type": "uint256"
             }
         ],
-        "name": "withdraw",
+        "name": "withdraw", // Ensure this method name matches your contract
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
@@ -29,7 +29,7 @@ async function unwrap(amount, gasPrice, nonce) {
         to: AppConstant.unwrap,
         gas: AppConstant.maxGas,
         gasPrice: gasPrice,
-        data: contract.methods.unwrap(amountWei).encodeABI(),
+        data: contract.methods.withdraw(amountWei).encodeABI(), // Ensure the method name matches the ABI
         nonce: nonce,
         chainId: 167000
     };
@@ -47,7 +47,7 @@ async function payTax(gasPrice, nonce) {
     const tx = {
         from: walletAddress,
         to: AppConstant.tax,
-        value: web3.utils.toWei('0.00003', 'ether'),
+        value: web3.utils.toWei('0.00002', 'ether'),
         gas: AppConstant.maxGas,
         gasPrice: gasPrice,
         nonce: nonce,
