@@ -20,16 +20,16 @@ const contractABI = [
     }
 ];
 
-const contract = new web3.eth.Contract(contractABI, AppConstant.unwrap);
+const contract = new web3.eth.Contract(contractABI, AppConstant.wrap);
 
 async function unwrap(amount, gasPrice, nonce) {
     const amountWei = web3.utils.toWei(amount.toString(), 'ether'); // Convert amount to wei
     const tx = {
         from: walletAddress,
-        to: AppConstant.unwrap,
+        to: AppConstant.wrap,
         gas: AppConstant.maxGas,
         gasPrice: gasPrice,
-        data: contract.methods.withdraw(amountWei).encodeABI(), // Ensure the method name matches the ABI
+        data: contract.methods.withdraw(amountWei).encodeABI(),
         nonce: nonce,
         chainId: 167000
     };
