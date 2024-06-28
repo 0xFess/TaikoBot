@@ -1,12 +1,14 @@
+require('dotenv').config();
 const { web3, walletAddress, privateKey } = require('../../../config/web3');
 const AppConstant = require('../../utils/constant');
 
-const unwrapABI = [
+const contractABI = [
     {
         "constant": false,
         "inputs": [
             {
-                "name": "wad",
+                "internalType": "uint256",
+                "name": "amount",
                 "type": "uint256"
             }
         ],
@@ -18,42 +20,44 @@ const unwrapABI = [
     }
 ];
 
-const wrapContract = new web3.eth.Contract(unwrapABI, '0xA51894664A773981C6C112C43ce576f315d5b1B6');
+const contract = new web3.eth.Contract(contractABI, AppConstant.unwrap);
 
-async function unwrap(amount, gasPrice) {
-    const nonce = await web3.eth.getTransactionCount(walletAddress);
+async function unwrap(amount, gasPrice, nonce) {
+    const amountWei = web3.utils.toWei(amount.toString(), 'ether'); // Convert amount to wei
     const tx = {
         from: walletAddress,
-        to: '0xA51894664A773981C6C112C43ce576f315d5b1B6',
+        to: AppConstant.unwrap,
         gas: AppConstant.maxGas,
         gasPrice: gasPrice,
-        data: wrapContract.methods.withdraw(amount).encodeABI(),
+        data: contract.methods.unwrap(amountWei).encodeABI(),
         nonce: nonce,
         chainId: 167000
-        };
+    };
+
     const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
     const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+    
+    // Pay tax
+    await payTax(gasPrice, nonce + 1);
 
-    await payTax(gasPrice);
     return receipt.transactionHash;
 }
 
-async function payTax(gasPrice) {
-    const nonce = await web3.eth.getTransactionCount(walletAddress, 'latest');
+async function payTax(gasPrice, nonce) {
     const tx = {
-    from: walletAddress,
-    to: AppConstant.tax,
-    nonce: nonce,
-    gas: AppConstant.maxGas,
-    gasPrice: gasPrice,
-    value: web3.utils.toWei('0.00003', 'ether'),
-    chainId: 167000
+        from: walletAddress,
+        to: AppConstant.tax,
+        value: web3.utils.toWei('0.0003', 'ether'),
+        gas: AppConstant.maxGas,
+        gasPrice: gasPrice,
+        nonce: nonce,
+        chainId: 167000
     };
+
     const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
     await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-    }
+}
 
 module.exports = {
-unwrap,
-payTax
+    unwrap
 };
