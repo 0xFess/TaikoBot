@@ -1,6 +1,6 @@
 # Taiko Transaction bot
 
-This Taiko transaction bot is a daily routin bot, complete randomize number transaction with range 132 tx - 143 tx with each tx has randomize interval between 50 seconds to 330 seconds
+This Taiko transaction bot is a daily routin bot, complete randomize number transaction with range 136 tx - 144 tx with each tx has randomize interval between 50 seconds to 330 seconds
 
 ## Prerequisite
 
@@ -24,7 +24,7 @@ This bot will repeate all tx until reached daily max point
 
 ## Set Up
 
-1. Clone the repo or Download the latest release [Here](https://github.com/0xFess/TaikoBot/releases)
+1. Clone the repo or Download the latest release [Here](https://github.com/0xFess/TaikoBot)
 2. cd to project directory
 3. run `npm install`
 5. Create a .env file in the same directory and add your Address & private key.
