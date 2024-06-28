@@ -39,7 +39,7 @@ async function main() {
             lastGasPrice = await redeem(lastGasPrice);
         } else {
             const wrapRangeMin = 0.003;
-            const wrapRangeMax = 0.004;
+            const wrapRangeMax = 0.005;
 
             let amount = Math.random() * (wrapRangeMax - wrapRangeMin) + wrapRangeMin;
             amount = parseFloat(amount.toFixed(6));
