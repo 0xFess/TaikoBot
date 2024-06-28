@@ -17,7 +17,7 @@ Bot Feature
 
 1. Lending randomize 1 USDC to 2 USDC into minterest Dapp
 2. Withdraw all USDC from minterest Dapp
-3. Wrap randomize 0.003 ETH to 0.005 ETH to WETH
+3. Wrap randomize 0.0003 ETH to 0.0005 ETH to WETH
 4. Unwrap all WETH back to ETH
 
 This bot will repeate all tx until reached daily max point
