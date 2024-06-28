@@ -24,41 +24,16 @@ This bot will repeate all tx until reached daily max point
 
 ## Set Up
 
-1. Clone the repo or Download the latest release [Here](https://github.com/Widiskel/initia-daily-bot/releases)
+1. Clone the repo or Download the latest release [Here](https://github.com/0xFess/TaikoBot/releases)
 2. cd to project directory
 3. run `npm install`
-4. run `cp account_tmp.js account.js`
-5. modify your account address and private key on `account.js`
+5. Create a .env file in the same directory and add your Address & private key.
 
 ```js
-const account = [["WALLET ADDRESS", "PRIVATE KEY"]];
+echo "WALLET_ADDRESS=you_wallet_address_here" > .env
+echo "PRIVATE_KEY=your_private_key_here" > .env
 
-export { account };
 ```
-
-6. run `cp user_config_tmp.js user_config.js`
-
-## Configure Bot
-
-Bot now have so many feature, but your daily faucet is only 30 INITIA. Thats why now im provide the way to configure what feature you want to use. To choose what feature you want to use
-
-1. Open `user_config.js`.
-2. look at
-
-```js
-// MORE TX CONFIG
-// const userConfig = Array.from({ length: 29 }, (_, i) => i + 1);
-
-// FOCUS EXP CONFIG
-// const userConfig = [9, 10, 11, 16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 30, 24, 25, 26, 31, 27];
-
-// USER CONFIG
-const userConfig = [
-  9, 10, 11, 16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 30, 24, 25, 26, 31, 27,
-];
-```
-
-3. Modify the USER CONFIG, based on the bot feature number that you want to run.
 
 ## Running Bot
 
