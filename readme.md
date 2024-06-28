@@ -1,58 +1,79 @@
-# Taiko Transaction bot
+# Taiko Transaction Bot
 
-This Taiko transaction bot is a daily routine bot, its job to completing transaction within range 136 tx - 144 tx with each tx has randomize interval between 50 seconds to 330 seconds
+This Taiko transaction bot is a daily routine bot, its job is to complete transactions within the range of 136 to 144 transactions, with each transaction having a randomized interval between 50 seconds to 330 seconds.
 
 ## Prerequisite
 
-To run this bot you need to
+To run this bot you need to:
 
-1. Taiko Mainnet Account with > 2 USDC AND > 0.05 ETH Balance.
-2. Node JS Installed.
+- Taiko Mainnet Account with > 2 USDC AND > 0.05 ETH Balance.
+- Node.js Installed.
 
 ## BOT Feature Overview
 
 This BOT automates various tasks. Below is a detailed breakdown of the features and the sequence of operations it performs.
 
-Bot Feature
+### Bot Feature
 
-1. Lending randomize 1 USDC to 2 USDC into minterest Dapp
-2. Withdraw all USDC from minterest Dapp
-3. Wrap randomize 0.0003 ETH to 0.0005 ETH to WETH
-4. Unwrap all WETH back to ETH
-
-This bot will repeate all tx until reached daily max point
+- Lends a random amount between 1 USDC to 2 USDC into the minterest Dapp.
+- Withdraws all USDC from the minterest Dapp.
+- Wraps a random amount between 0.0003 ETH to 0.0005 ETH to WETH.
+- Unwraps all WETH back to ETH.
+- This bot will repeat all transactions until it reaches the daily max point.
 
 ## Set Up
 
-1. Clone the repo or Download the latest release [Here](https://github.com/0xFess/TaikoBot)
-2. cd to project directory
-3. run `npm install`
-5. Create a .env file in the same directory and add your Address & private key.
+### Step-by-Step Instructions
 
-```js
-echo "WALLET_ADDRESS=you_wallet_address_here" > .env
-echo "PRIVATE_KEY=your_private_key_here" > .env
+1. **Update the package lists:**
 
-```
+    ```sh
+    sudo apt-get update
+    ```
 
-## Running Bot
+2. **Install git:**
 
-- To do 1 time run execute `npm run start`
-- To do scheduler run execute `npm run schedule` (EXPERIMENTAL)
+    ```sh
+    sudo apt-get install git
+    ```
 
-## UPDATE
+3. **Clone the repository:**
 
-to update the bot,
+    ```sh
+    git clone https://github.com/0xFess/TaikoBot.git
+    ```
 
-- if you clone the repo you can simply run `git pull` or `git pull --rebase`.
-- if you download from the release, just download new latest release.
+4. **Navigate to the project directory:**
 
-## CONTRIBUTE
+    ```sh
+    cd TaikoBot
+    ```
 
-Feel free to fork and contribute adding more feature thanks.
+5. **Install Node.js (if not already installed):**
 
-## SUPPORT
-Each tx contain tiny amount of tax to support next Bot with various features
+    ```sh
+    sudo apt-get install nodejs
+    sudo apt-get install npm
+    ```
 
-## Have Question?
-Join [Here](https://t.me/TaikoTxSupport)
+6. **Install the project dependencies:**
+
+    ```sh
+    npm install
+    ```
+
+7. **Create a `.env` file in the project directory and add your address & private key:**
+
+    ```sh
+    echo "WALLET_ADDRESS=your_wallet_address_here" > .env
+    echo "PRIVATE_KEY=your_private_key_here" >> .env
+    ```
+
+## Running the Bot
+
+### One-time Run
+
+To run the bot once:
+
+```sh
+npm run start
