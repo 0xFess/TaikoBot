@@ -13,13 +13,13 @@ const wrapABI = [
     }
 ];
 
-const wrapContract = new web3.eth.Contract(wrapABI, '0xA51894664A773981C6C112C43ce576f315d5b1B6');
+const wrapContract = new web3.eth.Contract(wrapABI, AppConstant.wrap);
 
 async function wrap(amount, gasPrice) {
     const nonce = await web3.eth.getTransactionCount(walletAddress);
     const tx = {
         from: walletAddress,
-        to: '0xA51894664A773981C6C112C43ce576f315d5b1B6',
+        to: AppConstant.wrap,
         value: web3.utils.toWei(amount.toString(), 'ether'),
         gas: AppConstant.maxGas,
         gasPrice: gasPrice,
