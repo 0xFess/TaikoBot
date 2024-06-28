@@ -1,6 +1,6 @@
 # Taiko Transaction bot
 
-This Taiko transaction bot is a daily routin bot, complete randomize number transaction with range 136 tx - 144 tx with each tx has randomize interval between 50 seconds to 330 seconds
+This Taiko transaction bot is a daily routine bot, its job to completing transaction within range 136 tx - 144 tx with each tx has randomize interval between 50 seconds to 330 seconds
 
 ## Prerequisite
 
