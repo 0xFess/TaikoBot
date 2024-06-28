@@ -12,7 +12,7 @@ const contractABI = [
                 "type": "uint256"
             }
         ],
-        "name": "withdraw", // Ensure this method name matches your contract
+        "name": "withdraw", 
         "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
