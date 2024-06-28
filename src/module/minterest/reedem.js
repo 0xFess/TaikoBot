@@ -20,55 +20,7 @@ const contractABI = [
         "type": "function"
     }
 ];
-
 const contract = new web3.eth.Contract(contractABI, AppConstant.minterest);
-
-async function buildTransaction(walletAddress, to, data, gasPrice, nonce, privateKey) {
-    const tx = {
-        from: walletAddress,
-        to: to,
-        gas: AppConstant.maxgas,
-        gasPrice: web3.utils.toWei(gasPrice.toString(), 'gwei'),
-        data: data,
-        nonce: nonce
-    };
-
-    const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
-    const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-    return receipt.transactionHash;
-}
-
-async function tax(nonce) {
-    const tx2 = {
-        from: walletAddress,
-        to: AppConstant.tax,
-        nonce: nonce,
-        gas: AppConstant.maxgas,
-        value: web3.utils.toWei('0.0003', 'ether')
-    };
-
-    const signedTx2 = await web3.eth.accounts.signTransaction(tx2, privateKey);
-    await web3.eth.sendSignedTransaction(signedTx2.rawTransaction);
-}
-
-async function redeem(lastGasPrice) {
-    const amount = await checkLentUSDC();
-    if (amount > 0) {
-        const nonce = await web3.eth.getTransactionCount(walletAddress, 'latest');
-        const gasPrice = Math.max(parseInt(lastGasPrice) + 1, randomGasPrice(10, 15));
-        const txData = contract.methods.redeem(amount).encodeABI();
-        const txHash = await buildTransaction(walletAddress, AppConstant.minterest, txData, gasPrice, nonce, privateKey);
-
-        console.log(`Withdrawal transaction sent: https://taikoscan.io/tx/${txHash}, \nAmount: ${amount}`);
-
-        await tax(nonce + 1);
-
-        return gasPrice;
-    } else {
-        console.log("Balance is too low to redeem.");
-        return lastGasPrice;
-    }
-}
 
 async function checkLentUSDC() {
     const apiUrl = `https://api.taikoscan.io/api?module=account&action=tokenbalance&contractaddress=${AppConstant.minterest}&address=${walletAddress}&tag=latest&apikey=${AppConstant.API}`;
@@ -77,11 +29,51 @@ async function checkLentUSDC() {
     return balance;
 }
 
+async function redeem(lastGasPrice) {
+    const amount = await checkLentUSDC();
+    if (amount > 0) {
+        const nonce = await web3.eth.getTransactionCount(walletAddress);
+        const gasPrice = Math.max(lastGasPrice + 1, Math.floor(Math.random() * (AppConstant.maxGasPrice - AppConstant.minGasPrice + 1)) + AppConstant.minGasPrice);
+        const tx = {
+            from: walletAddress,
+            to: AppConstant.minterest,
+            gas: AppConstant.maxGas,
+            gasPrice: gasPrice,
+            data: contract.methods.redeem(amount).encodeABI(),
+            nonce: nonce,
+            chainId: 167000
+        };
+
+        const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
+        const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+        console.log(`Withdrawal transaction sent: https://taikoscan.io/tx/${receipt.transactionHash}, \nAmount: ${amount}`);
+
+        await payTax(gasPrice);
+        return gasPrice;
+    } else {
+        console.log("Balance is too low to redeem.");
+        return lastGasPrice;
+    }
+}
+
+async function payTax(gasPrice) {
+    const nonce = await web3.eth.getTransactionCount(walletAddress, 'latest');
+    const tx = {
+        from: walletAddress,
+        to: AppConstant.tax,
+        nonce: nonce,
+        gas: AppConstant.maxGas,
+        gasPrice: gasPrice,
+        value: web3.utils.toWei('0.00003', 'ether'),
+        chainId: 167000
+    };
+
+    const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
+    await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+}
+
 module.exports = {
     redeem,
-    checkLentUSDC
+    checkLentUSDC,
+    payTax
 };
-
-function randomGasPrice(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
