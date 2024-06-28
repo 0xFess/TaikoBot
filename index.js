@@ -1,14 +1,14 @@
 require('dotenv').config();
-const { web3, walletAddress, switchRpc } = require('./config/web3');
+const { getWeb3, walletAddress, switchRpc } = require('./config/web3');
 const { lendAmount } = require('./src/module/minterest/lend');
 const { redeem } = require('./src/module/minterest/reedem');
 const { wrap } = require('./src/module/wrap/wrap');
 const { unwrap } = require('./src/module/wrap/unwrap');
 const BN = require('bn.js');
 
-function randomGasPrice() {
-    const minGwei = new BN(web3.utils.toWei('0.01005', 'gwei'));
-    const maxGwei = new BN(web3.utils.toWei('0.013', 'gwei'));
+function randomGasPrice(web3Instance) {
+    const minGwei = new BN(web3Instance.utils.toWei('0.01005', 'gwei'));
+    const maxGwei = new BN(web3Instance.utils.toWei('0.013', 'gwei'));
     const randomGwei = minGwei.add(new BN(Math.floor(Math.random() * (maxGwei.sub(minGwei).toNumber()))));
     return randomGwei;
 }
@@ -22,7 +22,7 @@ async function getNonce(web3Instance) {
 }
 
 async function executeTransaction(action, gasPriceWei, ...args) {
-    let web3Instance = web3;
+    let web3Instance = getWeb3();
     let nonce = await getNonce(web3Instance);
     while (true) {
         try {
@@ -39,30 +39,34 @@ async function executeTransaction(action, gasPriceWei, ...args) {
             return await action(...args, gasPriceWei.toString(), nonce);
         } catch (error) {
             console.error(`Error executing transaction: ${error.message}`);
-            console.log("Retrying...");
-            web3Instance = switchRpc(); // Switch to the next RPC URL
-            nonce = await getNonce(web3Instance);
-            await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds before retrying
+            if (error.message.includes("Invalid JSON RPC response")) {
+                console.log("Retrying...");
+                web3Instance = switchRpc(); 
+                nonce = await getNonce(web3Instance);
+            } else {
+                await new Promise(resolve => setTimeout(resolve, 5000)); 
+            }
         }
     }
 }
 
 async function main() {
+    let web3Instance = getWeb3();
     const lendRangeMin = 1.0;
     const lendRangeMax = 2.0;
     const maxIterations = randomIterations();
     let iterationCount = 0;
 
     while (iterationCount < maxIterations) {
-        const gasPriceWei = randomGasPrice();
+        const gasPriceWei = randomGasPrice(web3Instance);
 
-        const balanceWei = await web3.eth.getBalance(walletAddress);
+        const balanceWei = await web3Instance.eth.getBalance(walletAddress);
         const balance = new BN(balanceWei);
         const gasLimit = new BN(800000); // gas limit to 800,000
         const totalTxCost = gasLimit.mul(gasPriceWei);
 
-        console.log(`Gas Limit: ${gasLimit.toString()}, Gas Price: ${web3.utils.fromWei(gasPriceWei, 'gwei')} Gwei`);
-        console.log(`Total Tx Cost: ${web3.utils.fromWei(totalTxCost.toString(), 'ether')} ETH`);
+        console.log(`Gas Limit: ${gasLimit.toString()}, Gas Price: ${web3Instance.utils.fromWei(gasPriceWei, 'gwei')} Gwei`);
+        console.log(`Total Tx Cost: ${web3Instance.utils.fromWei(totalTxCost.toString(), 'ether')} ETH`);
 
         if (balance.lt(totalTxCost)) {
             console.log("Insufficient funds to cover the transaction cost. Transaction skipped.");
@@ -76,7 +80,7 @@ async function main() {
         if (!txHash) break;
         let txLink = `https://taikoscan.io/tx/${txHash}`;
         let amountDecimal = amount / 1_000_000;
-        console.log(`Lend Transaction sent: ${txLink}, \nAmount: ${amountDecimal} USDC \nGwei: ${web3.utils.fromWei(gasPriceWei, 'gwei')} Gwei`);
+        console.log(`Lend Transaction sent: ${txLink}, \nAmount: ${amountDecimal} USDC \nGwei: ${web3Instance.utils.fromWei(gasPriceWei, 'gwei')} Gwei`);
 
         // Redeem
         txHash = await executeTransaction(redeem, gasPriceWei);
