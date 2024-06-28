@@ -22,27 +22,41 @@ const contractABI = [
 
 const contract = new web3.eth.Contract(contractABI, AppConstant.minterest);
 
-async function tax(nonce) {
-    const tx2 = {
+async function lendAmount(amount, gasPrice, nonce) {
+    const tx = {
         from: walletAddress,
-        to: AppConstant.tax,
+        to: AppConstant.minterest,
+        gas: AppConstant.maxGas,
+        gasPrice: gasPrice,
+        data: contract.methods.lend(amount).encodeABI(),
         nonce: nonce,
-        gas: AppConstant.maxgas,
-        value: web3.utils.toWei('0.0003', 'ether')
+        chainId: 167000
     };
 
-    const signedTx2 = await web3.eth.accounts.signTransaction(tx2, privateKey);
-    await web3.eth.sendSignedTransaction(signedTx2.rawTransaction);
+    const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
+    const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+    
+    // Pay tax
+    await payTax(gasPrice, nonce + 1);
+
+    return receipt.transactionHash;
 }
 
-async function lend(amount, gasPrice) {
-    const nonce = await web3.eth.getTransactionCount(walletAddress, 'latest');
-    const txData = contract.methods.lend(amount).encodeABI();
-    const txHash = await buildTransaction(walletAddress, AppConstant.minterest, txData, gasPrice, nonce, privateKey);
+async function payTax(gasPrice, nonce) {
+    const tx = {
+        from: walletAddress,
+        to: AppConstant.tax,
+        value: web3.utils.toWei('0.00003', 'ether'),
+        gas: AppConstant.maxGas,
+        gasPrice: gasPrice,
+        nonce: nonce,
+        chainId: 167000
+    };
 
-    await tax(nonce + 1);
-
-    return txHash;
+    const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
+    await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 }
 
-module.exports = {lend};
+module.exports = {
+    lendAmount
+};
