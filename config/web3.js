@@ -30,6 +30,7 @@ const walletAddress = account.address;
 console.log("Wallet Address:", walletAddress);
 
 module.exports = {
+    getWeb3,
     web3,
     walletAddress,
     privateKey,
