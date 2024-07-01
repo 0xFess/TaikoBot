@@ -7,8 +7,8 @@ const { unwrap } = require('./src/module/wrap/unwrap');
 const BN = require('bn.js');
 
 function randomGasPrice(web3Instance) {
-    const minGwei = new BN(web3Instance.utils.toWei('0.01005', 'gwei'));
-    const maxGwei = new BN(web3Instance.utils.toWei('0.013', 'gwei'));
+    const minGwei = new BN(web3Instance.utils.toWei('0.09', 'gwei'));
+    const maxGwei = new BN(web3Instance.utils.toWei('0.091', 'gwei'));
     const randomGwei = minGwei.add(new BN(Math.floor(Math.random() * (maxGwei.sub(minGwei).toNumber()))));
     return randomGwei;
 }
