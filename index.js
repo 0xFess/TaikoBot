@@ -7,14 +7,14 @@ const { unwrap } = require('./src/module/wrap/unwrap');
 const BN = require('bn.js');
 
 function randomGasPrice(web3Instance) {
-    const minGwei = new BN(web3Instance.utils.toWei('0.09', 'gwei'));
-    const maxGwei = new BN(web3Instance.utils.toWei('0.091', 'gwei'));
+    const minGwei = new BN(web3Instance.utils.toWei('0.05', 'gwei'));
+    const maxGwei = new BN(web3Instance.utils.toWei('0.06', 'gwei'));
     const randomGwei = minGwei.add(new BN(Math.floor(Math.random() * (maxGwei.sub(minGwei).toNumber()))));
     return randomGwei;
 }
 
 function randomIterations() {
-    return Math.random() < 0.5 ? 7 : 8; // Randomly choose between 7 or 8
+    return Math.random() < 0.5 ? 7 : 8; 
 }
 
 async function getNonce(web3Instance) {
@@ -62,7 +62,7 @@ async function main() {
 
         const balanceWei = await web3Instance.eth.getBalance(walletAddress);
         const balance = new BN(balanceWei);
-        const gasLimit = new BN(800000); // gas limit to 800,000
+        const gasLimit = new BN(500000); 
         const totalTxCost = gasLimit.mul(gasPriceWei);
 
         console.log(`Gas Limit: ${gasLimit.toString()}, Gas Price: ${web3Instance.utils.fromWei(gasPriceWei, 'gwei')} Gwei`);
