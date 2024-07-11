@@ -8,7 +8,7 @@ const BN = require('bn.js');
 
 function randomGasPrice(web3Instance) {
     const minGwei = new BN(web3Instance.utils.toWei('0.05', 'gwei'));
-    const maxGwei = new BN(web3Instance.utils.toWei('0.06', 'gwei'));
+    const maxGwei = new BN(web3Instance.utils.toWei('0.054', 'gwei'));
     const randomGwei = minGwei.add(new BN(Math.floor(Math.random() * (maxGwei.sub(minGwei).toNumber()))));
     return randomGwei;
 }
@@ -25,7 +25,7 @@ async function executeTransaction(action, gasPriceWei, localNonce, ...args) {
     let web3Instance = getWeb3();
     while (true) {
         try {
-            const gasLimit = new BN(800000);
+            const gasLimit = new BN(100000);
             const totalTxCost = gasLimit.mul(new BN(gasPriceWei));
             const balanceWei = await web3Instance.eth.getBalance(walletAddress);
             const balance = new BN(balanceWei);
@@ -41,6 +41,8 @@ async function executeTransaction(action, gasPriceWei, localNonce, ...args) {
             if (error.message.includes("Invalid JSON RPC response")) {
                 console.log("Retrying...");
                 web3Instance = switchRpc(); 
+            } else if (error.message.includes("nonce too low")) {
+                console.log("Nonce too low, retrying with new nonce...");
                 localNonce = await getNonce(web3Instance);
             } else {
                 await new Promise(resolve => setTimeout(resolve, 5000)); 
@@ -55,10 +57,10 @@ async function main() {
     const lendRangeMax = 2.0;
     const maxIterations = randomIterations();
     let iterationCount = 0;
-    let localNonce = await getNonce(web3Instance);
 
     while (iterationCount < maxIterations) {
         const gasPriceWei = randomGasPrice(web3Instance);
+        let localNonce = await getNonce(web3Instance);
 
         const balanceWei = await web3Instance.eth.getBalance(walletAddress);
         const balance = new BN(balanceWei);
@@ -84,6 +86,7 @@ async function main() {
         console.log(`Lend Transaction sent: ${txLink}, \nAmount: ${amountDecimal} USDC \nGwei: ${web3Instance.utils.fromWei(gasPriceWei, 'gwei')} Gwei`);
 
         // Redeem
+        localNonce = await getNonce(web3Instance);
         txHash = await executeTransaction(redeem, gasPriceWei, localNonce);
         if (!txHash) break;
         localNonce++;
@@ -93,6 +96,7 @@ async function main() {
         const wrapAmountMax = 0.0004;
         let wrapAmount = Math.random() * (wrapAmountMax - wrapAmountMin) + wrapAmountMin;
         wrapAmount = parseFloat(wrapAmount.toFixed(6));
+        localNonce = await getNonce(web3Instance);
         txHash = await executeTransaction(wrap, gasPriceWei, localNonce, wrapAmount);
         if (!txHash) break;
         localNonce++;
@@ -100,6 +104,7 @@ async function main() {
         console.log(`Wrap Transaction sent: ${txLink}, \nAmount: ${wrapAmount} ETH`);
 
         // Unwrap
+        localNonce = await getNonce(web3Instance);
         txHash = await executeTransaction(unwrap, gasPriceWei, localNonce, wrapAmount);
         if (!txHash) break;
         localNonce++;
